@@ -33,4 +33,15 @@ class PacienteService
     {
         return $this->pacienteRepository->findById($id);
     }
+
+    /**
+     * Registrar un nuevo paciente en el sistema (RQF-09).
+     *
+     * @param array<string, mixed> $data
+     */
+    public function crearPaciente(array $data): Paciente
+    {
+        return $this->pacienteRepository->create($data);
+    }
 }
+

@@ -20,4 +20,10 @@ class PacienteRepository implements PacienteRepositoryInterface
     {
         return Paciente::find($id);
     }
+
+    public function create(array $data): Paciente
+    {
+        return Paciente::create($data);
+    }
 }
+

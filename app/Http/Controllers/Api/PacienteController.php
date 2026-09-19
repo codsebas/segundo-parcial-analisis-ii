@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePacienteRequest;
 use App\Http\Resources\PacienteResource;
 use App\Services\PacienteService;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +11,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Controlador REST: PacienteController
- * Expone operaciones de lectura para pacientes (RQF-07, RQNF-03)
+ * Expone operaciones de lectura y registro para pacientes (RQF-07, RQF-09, RQNF-03)
  */
 class PacienteController extends Controller
 {
@@ -45,4 +46,21 @@ class PacienteController extends Controller
 
         return new PacienteResource($paciente);
     }
+
+    /**
+     * POST /api/pacientes
+     * Registrar un nuevo paciente en el sistema (RQF-09).
+     */
+    public function store(StorePacienteRequest $request): JsonResponse
+    {
+        $paciente = $this->pacienteService->crearPaciente($request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'codigo' => 201,
+            'mensaje' => 'Paciente registrado exitosamente.',
+            'data' => new PacienteResource($paciente),
+        ], 201);
+    }
 }
+
