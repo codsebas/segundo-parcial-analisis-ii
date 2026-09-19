@@ -1,24 +1,23 @@
-# Dependencias
-node_modules/
-
-# Entorno y credenciales
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
 .env
-.env.local
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# Sistema Operativo
-.DS_Store
-Thumbs.db
-
-# Editores e IDEs
-.vscode/
-.idea/
-
-# Datos temporales de pruebas y cobertura
-coverage/
-.temp/
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
