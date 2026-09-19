@@ -11,10 +11,10 @@ class CitaResource extends JsonResource
      * Paleta de colores estándar para FullCalendar según el estado de la cita (RQF-10).
      */
     protected const COLORES_ESTADO = [
-        'pendiente'  => ['bg' => '#f59e0b', 'border' => '#d97706', 'text' => '#ffffff'],
-        'confirmada' => ['bg' => '#3b82f6', 'border' => '#2563eb', 'text' => '#ffffff'],
-        'atendida'   => ['bg' => '#10b981', 'border' => '#059669', 'text' => '#ffffff'],
-        'cancelada'  => ['bg' => '#6b7280', 'border' => '#4b5563', 'text' => '#ffffff'],
+        'pendiente'  => ['bg' => '#fef3c7', 'border' => '#f59e0b', 'text' => '#92400e'],
+        'confirmada' => ['bg' => '#e0f2fe', 'border' => '#2b6b8a', 'text' => '#0369a1'],
+        'atendida'   => ['bg' => '#e6f8f0', 'border' => '#0db26b', 'text' => '#065f46'],
+        'cancelada'  => ['bg' => '#fee2e2', 'border' => '#ef4444', 'text' => '#991b1b'],
     ];
 
     public function toArray(Request $request): array
