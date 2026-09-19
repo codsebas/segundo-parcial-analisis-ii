@@ -24,6 +24,7 @@ Route::get('/pacientes/{id}', [PacienteController::class, 'show'])->name('api.pa
 // Endpoints CRUD para Citas Médicas (RQF-01, RQF-04, RQF-05, RQF-06, RQF-07)
 Route::get('/citas', [CitaController::class, 'index'])->name('api.citas.index');
 Route::post('/citas', [CitaController::class, 'store'])->name('api.citas.store');
+Route::post('/citas/validar-disponibilidad', [CitaController::class, 'validarDisponibilidad'])->name('api.citas.validarDisponibilidad');
 Route::get('/citas/{id}', [CitaController::class, 'show'])->name('api.citas.show');
 Route::put('/citas/{id}', [CitaController::class, 'update'])->name('api.citas.update');
 Route::patch('/citas/{id}/estado', [CitaController::class, 'updateEstado'])->name('api.citas.updateEstado');

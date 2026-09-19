@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Domain\AppointmentConflictValidator;
+use App\Domain\CitaStateMachine;
 use App\Exceptions\HorarioConflictException;
 use App\Models\Cita;
 use App\Repositories\Contracts\CitaRepositoryInterface;
@@ -40,6 +42,57 @@ class CitaService
     }
 
     /**
+     * Valida si un horario está disponible para un doctor en una fecha determinada.
+     * Útil para verificaciones previas o feedback en tiempo real.
+     */
+    public function validarDisponibilidad(
+        int $doctorId,
+        string $fecha,
+        string $horaInicio,
+        string $horaFin,
+        ?int $excludeCitaId = null
+    ): array {
+        if (strcmp($horaInicio, $horaFin) >= 0) {
+            return [
+                'disponible' => false,
+                'motivo' => 'La hora de inicio debe ser anterior a la hora de fin.'
+            ];
+        }
+
+        $conflicto = $this->citaRepository->findConflictingAppointment(
+            $doctorId,
+            $fecha,
+            $horaInicio,
+            $horaFin,
+            $excludeCitaId
+        );
+
+        if ($conflicto) {
+            $tipo = AppointmentConflictValidator::clasificarSolapamiento(
+                $horaInicio,
+                $horaFin,
+                $conflicto->hora_inicio,
+                $conflicto->hora_fin
+            );
+
+            return [
+                'disponible' => false,
+                'tipo_conflicto' => $tipo,
+                'conflicto' => [
+                    'id' => $conflicto->id,
+                    'doctor_id' => $conflicto->doctor_id,
+                    'fecha' => is_string($conflicto->fecha) ? $conflicto->fecha : $conflicto->fecha->format('Y-m-d'),
+                    'hora_inicio' => $conflicto->hora_inicio,
+                    'hora_fin' => $conflicto->hora_fin,
+                    'estado' => $conflicto->estado,
+                ]
+            ];
+        }
+
+        return ['disponible' => true];
+    }
+
+    /**
      * Crear una nueva cita médica aplicando validación estricta de conflictos en servidor.
      *
      * @throws HorarioConflictException Si el doctor ya cuenta con una cita en ese horario (409)
@@ -72,8 +125,15 @@ class CitaService
         );
 
         if ($conflicto) {
+            $tipoSolapamiento = AppointmentConflictValidator::clasificarSolapamiento(
+                $data['hora_inicio'],
+                $data['hora_fin'],
+                $conflicto->hora_inicio,
+                $conflicto->hora_fin
+            );
+
             throw new HorarioConflictException(
-                "Conflicto de horario: El {$doctor->nombre} ya tiene una cita activa ({$conflicto->hora_inicio} - {$conflicto->hora_fin}) en el intervalo solicitado.",
+                "Conflicto de horario ({$tipoSolapamiento}): El {$doctor->nombre} ya tiene una cita activa ({$conflicto->hora_inicio} - {$conflicto->hora_fin}) en el intervalo solicitado.",
                 $conflicto
             );
         }
@@ -99,6 +159,13 @@ class CitaService
             return null;
         }
 
+        // Si la cita ya está cancelada o atendida, no se permite reprogramar
+        if (in_array($cita->estado, [Cita::ESTADO_CANCELADA, Cita::ESTADO_ATENDIDA], true)) {
+            throw new InvalidArgumentException(
+                "No es posible reprogramar una cita que se encuentra en estado '{$cita->estado}'."
+            );
+        }
+
         $nuevaFecha = $data['fecha'] ?? (is_string($cita->fecha) ? $cita->fecha : $cita->fecha->format('Y-m-d'));
         $nuevaInicio = $data['hora_inicio'] ?? $cita->hora_inicio;
         $nuevaFin = $data['hora_fin'] ?? $cita->hora_fin;
@@ -117,8 +184,15 @@ class CitaService
         );
 
         if ($conflicto) {
+            $tipo = AppointmentConflictValidator::clasificarSolapamiento(
+                $nuevaInicio,
+                $nuevaFin,
+                $conflicto->hora_inicio,
+                $conflicto->hora_fin
+            );
+
             throw new HorarioConflictException(
-                "Conflicto de horario al reprogramar: El doctor ya tiene una cita activa asignada en ese intervalo.",
+                "Conflicto de horario al reprogramar ({$tipo}): El doctor ya tiene una cita activa asignada en ese intervalo.",
                 $conflicto
             );
         }
@@ -137,16 +211,20 @@ class CitaService
     }
 
     /**
-     * Cambiar el estado de una cita médica (RQF-05).
+     * Cambiar el estado de una cita médica utilizando la máquina de estados formal (RQF-05).
      * La cancelación preserva el registro histórico en base de datos.
      *
-     * @throws InvalidArgumentException Si el estado no es válido (400)
+     * @throws InvalidArgumentException Si la transición de estado no es válida (400)
      */
     public function cambiarEstado(int $id, string $nuevoEstado): ?Cita
     {
-        if (!in_array($nuevoEstado, Cita::ESTADOS_VALIDOS, true)) {
-            throw new InvalidArgumentException("El estado '{$nuevoEstado}' no es válido. Estados permitidos: " . implode(', ', Cita::ESTADOS_VALIDOS));
+        $cita = $this->citaRepository->findById($id);
+        if (!$cita) {
+            return null;
         }
+
+        // Validación formal contra la máquina de estados del dominio
+        CitaStateMachine::validarTransicion($cita->estado, $nuevoEstado);
 
         return $this->citaRepository->updateEstado($id, $nuevoEstado);
     }

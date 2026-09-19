@@ -110,4 +110,31 @@ class CitaController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+    /**
+     * POST /api/citas/validar-disponibilidad
+     * Valida formalmente si un horario se encuentra disponible para un doctor.
+     * Retorna HTTP 200 si está libre, HTTP 409 si hay conflicto (RQF-03, RQNF-07).
+     */
+    public function validarDisponibilidad(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'doctor_id' => 'required|integer|exists:doctores,id',
+            'fecha' => 'required|date_format:Y-m-d',
+            'hora_inicio' => 'required|date_format:H:i:s,H:i',
+            'hora_fin' => 'required|date_format:H:i:s,H:i',
+            'exclude_cita_id' => 'nullable|integer',
+        ]);
+
+        $resultado = $this->citaService->validarDisponibilidad(
+            (int) $validated['doctor_id'],
+            $validated['fecha'],
+            $validated['hora_inicio'],
+            $validated['hora_fin'],
+            isset($validated['exclude_cita_id']) ? (int) $validated['exclude_cita_id'] : null
+        );
+
+        $status = $resultado['disponible'] ? 200 : 409;
+        return response()->json($resultado, $status);
+    }
 }
