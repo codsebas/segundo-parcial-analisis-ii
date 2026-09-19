@@ -10,7 +10,7 @@
 - **Evaluación:** Segundo Parcial — Serie II (Módulo Funcional: 10.00 pts)
 - **Estudiante:** Sebastián (`codsebas`)
 - **Repositorio Oficial:** [https://github.com/codsebas/segundo-parcial-analisis-ii.git](https://github.com/codsebas/segundo-parcial-analisis-ii.git)
-- **Fecha de Emisión:** 19 de Septiembre de 2026
+- **Fecha de Emisión:** Septiembre de 2026
 - **Tecnologías:** Docker, MySQL 8.0, PHP 8.2, Laravel 12.69.2, FullCalendar v6, Tailwind CSS, FontAwesome 6, Google Fonts (Raleway & Open Sans).
 
 ---
@@ -56,13 +56,21 @@ El enunciado del examen establece cuatro condiciones críticas verificables que 
 ## 3. EVIDENCIA DE INFRAESTRUCTURA DOCKER Y PERSISTENCIA MYSQL
 
 ### 3.1. Estado del Contenedor Docker (`docker ps`)
+
+![img.png](img.png)
+
 ```bash
 $ docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS                   PORTS                                         NAMES
 e9ad605be284   mysql:8.0   "docker-entrypoint.s…"   1 hour ago      Up 10 minutes (healthy)  0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp   clinica_mysql
 ```
 
+---
+
 ### 3.2. Inspección del Volumen Persistente (`docker volume inspect clinica_mysql_data`)
+
+![img_6.png](img_6.png)
+
 ```json
 [
     {
@@ -81,7 +89,12 @@ e9ad605be284   mysql:8.0   "docker-entrypoint.s…"   1 hour ago      Up 10 minu
 ]
 ```
 
+---
+
 ### 3.3. Ejecución de la Suite Automatizada de Docker (`verify-docker.php`)
+
+![img_7.png](img_7.png)
+
 ```text
 ======================================================================
  SUITE DE PRUEBAS DE INTEGRACIÓN: ENTORNO DOCKER Y PERSISTENCIA MYSQL 
@@ -126,6 +139,12 @@ e9ad605be284   mysql:8.0   "docker-entrypoint.s…"   1 hour ago      Up 10 minu
 
 ---
 
+### 3.4. Estructura de Tablas en MySQL (DDL)
+
+![img_8.png](img_8.png)
+
+---
+
 ## 4. EVIDENCIA DE ARQUITECTURA DE 4 CAPAS (LARAVEL 12)
 
 El backend implementa de forma rigurosa la separación de responsabilidades en 4 capas según el requerimiento `[RQNF-04]`:
@@ -165,13 +184,14 @@ El backend implementa de forma rigurosa la separación de responsabilidades en 4
 
 ## 5. TRAZAS REALES DEL API REST Y CONTENCIÓN DE ERRORES
 
-A continuación se presentan las peticiones cURL y respuestas JSON obtenidas directamente del servidor en ejecución sobre el puerto 8000:
-
 ### 5.1. `GET /api/doctores` — Listado de Doctores (`HTTP 200 OK`)
+
+![img_9.png](img_9.png)
+
 ```bash
 curl -X GET http://127.0.0.1:8000/api/doctores
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```json
 {
     "data": [
@@ -195,7 +215,18 @@ curl -X GET http://127.0.0.1:8000/api/doctores
 
 ---
 
-### 5.2. `POST /api/pacientes` — Creación Exitosa de Paciente (`HTTP 201 Created`)
+### 5.2. `GET /api/pacientes` — Listado de Pacientes (`HTTP 200 OK`)
+
+![img_10.png](img_10.png)
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/pacientes
+```
+
+---
+
+### 5.3. `POST /api/pacientes` — Creación Exitosa de Paciente (`HTTP 201 Created`)
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/pacientes \
   -H "Content-Type: application/json" \
@@ -206,7 +237,7 @@ curl -X POST http://127.0.0.1:8000/api/pacientes \
     "fecha_nacimiento": "1996-03-22"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```json
 {
     "status": "success",
@@ -224,7 +255,8 @@ curl -X POST http://127.0.0.1:8000/api/pacientes \
 
 ---
 
-### 5.3. `POST /api/pacientes` — Contención por Validación de Datos (`HTTP 400 Bad Request`)
+### 5.4. `POST /api/pacientes` — Contención por Validación de Datos (`HTTP 400 Bad Request`)
+
 ```bash
 curl -i -X POST http://127.0.0.1:8000/api/pacientes \
   -H "Content-Type: application/json" \
@@ -234,7 +266,7 @@ curl -i -X POST http://127.0.0.1:8000/api/pacientes \
     "fecha_nacimiento": "2099-01-01"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```http
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
@@ -259,7 +291,17 @@ Content-Type: application/json
 
 ---
 
-### 5.4. `POST /api/citas` — Creación Exitosa de Cita Médica (`HTTP 201 Created`)
+### 5.5. `GET /api/citas` — Citas Formateadas para FullCalendar (`HTTP 200 OK`)
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/citas
+```
+Retorna la colección completa de eventos estructurados para consumo directo de FullCalendar con títulos, marcas horarias ISO y propiedades de estilo clínico (`backgroundColor`, `borderColor`, `textColor`).
+
+---
+
+### 5.6. `POST /api/citas` — Creación Exitosa de Cita Médica (`HTTP 201 Created`)
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/citas \
   -H "Content-Type: application/json" \
@@ -272,7 +314,7 @@ curl -X POST http://127.0.0.1:8000/api/citas \
     "motivo": "Consulta de control y seguimiento de cardiología"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```json
 {
     "data": {
@@ -305,7 +347,8 @@ curl -X POST http://127.0.0.1:8000/api/citas \
 
 ---
 
-### 5.5. `POST /api/citas` — Rechazo por Conflicto de Horario / Doble Reserva (`HTTP 409 Conflict`)
+### 5.7. `POST /api/citas` — Rechazo por Conflicto de Horario / Doble Reserva (`HTTP 409 Conflict`)
+
 ```bash
 curl -i -X POST http://127.0.0.1:8000/api/citas \
   -H "Content-Type: application/json" \
@@ -318,7 +361,7 @@ curl -i -X POST http://127.0.0.1:8000/api/citas \
     "motivo": "Intento de doble reserva solapada"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```http
 HTTP/1.1 409 Conflict
 Content-Type: application/json
@@ -342,7 +385,8 @@ Content-Type: application/json
 
 ---
 
-### 5.6. `POST /api/citas` — Contención por Rango Horario Invertido (`HTTP 400 Bad Request`)
+### 5.8. `POST /api/citas` — Contención por Rango Horario Invertido (`HTTP 400 Bad Request`)
+
 ```bash
 curl -i -X POST http://127.0.0.1:8000/api/citas \
   -H "Content-Type: application/json" \
@@ -355,7 +399,7 @@ curl -i -X POST http://127.0.0.1:8000/api/citas \
     "motivo": "Error intencional: fin menor que inicio"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```http
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
@@ -374,7 +418,8 @@ Content-Type: application/json
 
 ---
 
-### 5.7. `POST /api/citas` — Contención por Llaves Foráneas Inexistentes (`HTTP 400 Bad Request`)
+### 5.9. `POST /api/citas` — Contención por Llaves Foráneas Inexistentes (`HTTP 400 Bad Request`)
+
 ```bash
 curl -i -X POST http://127.0.0.1:8000/api/citas \
   -H "Content-Type: application/json" \
@@ -387,7 +432,7 @@ curl -i -X POST http://127.0.0.1:8000/api/citas \
     "motivo": "IDs inexistentes"
   }'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```http
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
@@ -409,7 +454,8 @@ Content-Type: application/json
 
 ---
 
-### 5.8. `POST /api/citas/validar-disponibilidad` — Verificación Previa sin Persistir
+### 5.10. `POST /api/citas/validar-disponibilidad` — Verificación Previa sin Persistir
+
 **Caso Libre (`HTTP 200 OK`):**
 ```bash
 curl -X POST http://127.0.0.1:8000/api/citas/validar-disponibilidad \
@@ -445,13 +491,14 @@ curl -X POST http://127.0.0.1:8000/api/citas/validar-disponibilidad \
 
 ---
 
-### 5.9. `PATCH /api/citas/{id}/estado` — Máquina de Estados y Preservación Histórica
+### 5.11. `PATCH /api/citas/{id}/estado` — Máquina de Estados y Preservación Histórica
+
 ```bash
 curl -X PATCH http://127.0.0.1:8000/api/citas/1/estado \
   -H "Content-Type: application/json" \
   -d '{"estado": "atendida"}'
 ```
-**Respuesta:**
+**Respuesta del Servidor:**
 ```json
 {
     "data": {
@@ -464,38 +511,70 @@ curl -X PATCH http://127.0.0.1:8000/api/citas/1/estado \
 }
 ```
 
-**Prueba de Preservación Histórica en Cancelación:**
-Al solicitar `PATCH /api/citas/{id}/estado` con `estado: "cancelada"`, la cita **permanece en la base de datos** (verificable con `SELECT id, estado FROM citas WHERE id = X`), cambiando su color a **rojo pastel** y liberando automáticamente la agenda del doctor para permitir agendamientos en ese mismo rango sin generar conflicto 409.
+**Verificación en Base de Datos de Preservación Histórica tras Cancelación:**
+```bash
+docker exec clinica_mysql mysql -u clinica_user -pclinica_pass123 clinica_db -e "SELECT id, doctor_id, paciente_id, fecha, hora_inicio, hora_fin, estado FROM citas WHERE id = 7;"
+```
+```text
++----+-----------+-------------+------------+-------------+----------+-----------+
+| id | doctor_id | paciente_id | fecha      | hora_inicio | hora_fin | estado    |
++----+-----------+-------------+------------+-------------+----------+-----------+
+|  7 |         2 |           1 | 2026-09-18 | 15:00:00    | 16:00:00 | cancelada |
++----+-----------+-------------+------------+-------------+----------+-----------+
+```
+*(Demuestra que el registro histórico de la cita cancelada se conserva íntegro en la base de datos y no es destruido con DELETE).*
 
 ---
 
 ## 6. EVIDENCIA DE LA INTERFAZ GRÁFICA Y FULLCALENDAR V6
 
-### 6.1. Identidad Visual y Paleta Clínica Médica
-Inspirada en el sitio de referencia clínica `cirugiadigestivamini.com`:
-- **Tipografía de Títulos:** Google Fonts `Raleway` (extra-bold y elegante).
-- **Tipografía de Cuerpo y Calendario:** Google Fonts `Open Sans` (legible y limpia).
-- **Paleta Base:**
-  - Azul Hospitalario: `#2B6B8A` (Header, acciones primarias).
-  - Azul Pastel Clínico: `#4A89A7` (Bordes y acentos de navegación).
-  - Azul Hielo: `#EBF4F8` / `#F0F7FA` (Fondos sutiles).
-  - Verde Menta: `#0DB26B` / `#E6F8F0` (Botón principal y estado atendida).
-- **Código Semáforo de Citas (`[RQF-10]`):**
-  - 🟡 **Pendiente:** Fondo `#FEF3C7` · Borde `#F59E0B` · Texto `#92400E`
-  - 🔵 **Confirmada:** Fondo `#E0F2FE` · Borde `#2B6B8A` · Texto `#0369A1`
-  - 🟢 **Atendida:** Fondo `#E6F8F0` · Borde `#0DB26B` · Texto `#065F46`
-  - 🔴 **Cancelada:** Fondo `#FEE2E2` · Borde `#EF4444` · Texto `#991B1B` *(Rojo pastel solicitado específicamente por el evaluador).*
+### 6.1. Vista General del Calendario (Modo Mes) con Paleta Médica
 
-### 6.2. Capacidades Interactivas Comprobadas
-1. **Múltiples Vistas:** Botones integrados para alternar entre Mes (`Mes`), Semana (`Semana`), Día (`Día`) y Agenda (`Agenda`).
-2. **Creación Dinámica:** Clic en celda (`dateClick`) o botón superior abre `#modalCrearCita` precargando fecha y hora.
-3. **Detalle Completo:** Clic en evento (`eventClick`) abre `#modalDetalleCita` con historial completo y botones de transición de estado.
-4. **Drag & Drop con Rollback:** Si se arrastra una cita a un horario donde el doctor ya tiene consulta, la API devuelve `HTTP 409 Conflict`, el calendario revierte automáticamente la cita a su horario original (`info.revert()`) y notifica al usuario con SweetAlert2.
-5. **Registro Rápido de Pacientes:** Modal `#modalNuevoPaciente` accesible desde el header y desde el selector de citas; guarda vía API y auto-selecciona al nuevo paciente en caliente.
+![img_11.png](img_11.png)
+
+---
+
+### 6.2. Vistas Alternativas del Calendario (Semana, Día y Agenda)
+La interfaz FullCalendar v6 incluye controles nativos en el encabezado para alternar instantáneamente entre vistas operativas:
+- **Vista de Semana (`timeGridWeek`):** Mapeo de horarios por columnas diarias de 08:00 a 20:00 con resolución de 15 minutos.
+- **Vista de Día (`timeGridDay`):** Detalle de la jornada con visualización precisa de cada consulta.
+- **Vista de Agenda (`listMonth`):** Listado cronológico agrupado por fechas para recepción y secretaría médica.
+
+---
+
+### 6.3. Modal de Agendamiento de Nueva Cita Médica
+Al dar clic en una celda horaria del calendario o en el botón `+ Nueva Cita`, se despliega el modal `#modalCrearCita` con los campos de selección de Doctor, Paciente, Fecha, Horas y Motivo, precargando la fecha seleccionada.
+
+---
+
+### 6.4. Modal de Registro Rápido de Pacientes y Auto-Selección
+El modal `#modalNuevoPaciente` permite registrar un nuevo paciente al vuelo desde la barra superior o desde el selector de citas. Tras registrarse satisfactoriamente con `HTTP 201 Created`, la lista desplegable de pacientes se actualiza dinámicamente y pre-selecciona al paciente recién creado.
+
+---
+
+### 6.5. Alerta Interactiva de Conflicto de Horario (409 Conflict)
+Cuando se intenta programar una cita en un intervalo ya ocupado por el doctor seleccionado, el backend responde `HTTP 409 Conflict` y la interfaz despliega un banner de alerta con el detalle exacto de la colisión, impidiendo la doble reserva.
+
+---
+
+### 6.6. Reprogramación Interactiva Drag & Drop con Reversión Automática
+Al arrastrar una cita a un nuevo día u hora en el calendario, se dispara automáticamente una petición `PUT /api/citas/{id}`. Si el nuevo horario produce una colisión con otra cita del doctor, el evento ejecuta de inmediato `info.revert()` regresando a su posición original.
+
+---
+
+### 6.7. Modal de Detalle de Cita y Gestión de Estados
+Al dar clic sobre una cita existente, se abre `#modalDetalleCita` mostrando la ficha médica completa y los botones de acción para transicionar entre estados: **Confirmar Cita**, **Marcar Atendida** y **Cancelar Cita**.
+
+---
+
+### 6.8. Cita Cancelada con Color Rojo Pastel
+Al cancelar una cita, el sistema actualiza su estado en la base de datos sin borrarla y el calendario la renderiza con el color **rojo pastel** especificado (`#FEE2E2` de fondo, borde `#EF4444` y texto `#991B1B`), liberando simultáneamente la agenda del doctor para nuevas citas en ese horario.
 
 ---
 
 ## 7. SUITE AUTOMATIZADA DE PRUEBAS (34 TESTS / 123 ASERCIONES)
+
+![img_5.png](img_5.png)
 
 Ejecución de `php artisan test` sobre la base de datos MySQL en Docker:
 
@@ -555,6 +634,10 @@ Ejecución de `php artisan test` sobre la base de datos MySQL en Docker:
 ## 8. HISTORIAL DE GIT, FLUJO DE RAMAS Y MERGES REALES
 
 ### 8.1. Grafo Real de Git (`git log --graph --all --oneline`)
+
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+
 ```text
 *   a9dfc97 Merge pull request #6 from codsebas/feature/creacion-pacientes
 |\  
@@ -602,7 +685,13 @@ Ejecución de `php artisan test` sobre la base de datos MySQL en Docker:
 * 025b399 chore: initial commit with project specifications and requirements matrix
 ```
 
-### 8.2. Tabla Resumen de Pull Requests Merged
+---
+
+### 8.2. Evidencia de Pull Requests en GitHub
+
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)
+
 | PR # | Rama Origen | Rama Destino | Título | Commit Merge |
 |:---:|---|---|---|:---:|
 | **#1** | `feature/docker-mysql-schema` | `main` | Entorno Docker, MySQL 8.0, DDL inicial y datos semilla | `f86c3a5` |
