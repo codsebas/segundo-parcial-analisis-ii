@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/doctores', [DoctorController::class, 'index'])->name('api.doctores.index');
 Route::get('/doctores/{id}', [DoctorController::class, 'show'])->name('api.doctores.show');
 
-// Endpoints de lectura para Pacientes (RQF-07)
+// Endpoints para Pacientes (RQF-07, RQF-09)
 Route::get('/pacientes', [PacienteController::class, 'index'])->name('api.pacientes.index');
+Route::post('/pacientes', [PacienteController::class, 'store'])->name('api.pacientes.store');
 Route::get('/pacientes/{id}', [PacienteController::class, 'show'])->name('api.pacientes.show');
 
 // Endpoints CRUD para Citas Médicas (RQF-01, RQF-04, RQF-05, RQF-06, RQF-07)

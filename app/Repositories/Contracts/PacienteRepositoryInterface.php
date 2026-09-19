@@ -22,4 +22,12 @@ interface PacienteRepositoryInterface
      * Buscar paciente por su identificador único.
      */
     public function findById(int $id): ?Paciente;
+
+    /**
+     * Registrar un nuevo paciente en la base de datos.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function create(array $data): Paciente;
 }
+
