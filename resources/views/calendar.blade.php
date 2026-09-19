@@ -133,11 +133,16 @@
 
                 <!-- Botón Acción Principal -->
                 <div class="flex items-center space-x-3">
+                    <button id="btnAbrirModalPaciente" class="inline-flex items-center space-x-2 px-3.5 py-2.5 bg-hospital-soft hover:bg-slate-100 text-hospital-deep border border-hospital-pastel/40 rounded-lg font-heading font-bold text-sm shadow-xs transition-all duration-200">
+                        <i class="fa-solid fa-user-plus text-base text-hospital-pastel"></i>
+                        <span class="hidden sm:inline">Nuevo Paciente</span>
+                    </button>
                     <button id="btnAbrirModalCrear" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-clinica-mint hover:bg-clinica-hover text-white rounded-lg font-heading font-bold text-sm shadow-sm transition-all duration-200 transform hover:scale-[1.02]">
                         <i class="fa-solid fa-calendar-plus text-base"></i>
                         <span>Nueva Cita</span>
                     </button>
                 </div>
+
 
             </div>
         </div>
@@ -258,15 +263,21 @@
                 <!-- Mensaje de Error en Servidor -->
                 <div id="bannerErrorCrear" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium space-y-1"></div>
 
-                <!-- Selección de Paciente (RQF-08) -->
+                <!-- Selección de Paciente (RQF-08, RQF-09) -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1" for="crearPacienteId">
-                        Paciente *
-                    </label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700" for="crearPacienteId">
+                            Paciente *
+                        </label>
+                        <button type="button" id="btnCrearPacienteRapido" class="text-xs font-bold text-hospital-deep hover:text-hospital-hover hover:underline flex items-center gap-1 cursor-pointer">
+                            <i class="fa-solid fa-user-plus text-[11px]"></i> + Registrar Paciente
+                        </button>
+                    </div>
                     <select id="crearPacienteId" name="paciente_id" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-hospital-deep focus:ring-1 focus:ring-hospital-deep outline-hidden bg-slate-50 focus:bg-white">
                         <option value="">Cargando lista de pacientes...</option>
                     </select>
                 </div>
+
 
                 <!-- Selección de Doctor (RQF-08) -->
                 <div>
@@ -425,6 +436,81 @@
 
         </div>
     </div>
+
+    <!-- ================================================================= -->
+    <!-- MODAL 3: REGISTRO DE NUEVO PACIENTE (RQF-09, RQNF-03)             -->
+    <!-- ================================================================= -->
+    <div id="modalNuevoPaciente" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+            
+            <!-- Encabezado Modal -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-hospital-ice text-hospital-deep flex items-center justify-center">
+                        <i class="fa-solid fa-user-plus text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">Registrar Paciente</h3>
+                        <p class="text-xs text-slate-500">Expediente y datos personales para citas médicas</p>
+                    </div>
+                </div>
+                <button type="button" class="btnCerrarModalPaciente text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Formulario Paciente -->
+            <form id="formCrearPaciente" class="mt-4 space-y-4">
+                
+                <!-- Alerta de Errores 400 -->
+                <div id="bannerErrorPaciente" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium space-y-1"></div>
+
+                <!-- Nombre Completo (Obligatorio) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="pacienteNombre">
+                        Nombre Completo *
+                    </label>
+                    <input type="text" id="pacienteNombre" name="nombre" required maxlength="120" placeholder="Ej. Mariana Morales Gómez" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-hospital-deep focus:ring-1 focus:ring-hospital-deep outline-hidden bg-slate-50 focus:bg-white">
+                </div>
+
+                <!-- Teléfono (Opcional) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="pacienteTelefono">
+                        Teléfono
+                    </label>
+                    <input type="tel" id="pacienteTelefono" name="telefono" maxlength="25" placeholder="Ej. +502 4567-8901" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-hospital-deep focus:ring-1 focus:ring-hospital-deep outline-hidden bg-slate-50 focus:bg-white">
+                </div>
+
+                <!-- Correo Electrónico (Opcional) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="pacienteEmail">
+                        Correo Electrónico
+                    </label>
+                    <input type="email" id="pacienteEmail" name="email" maxlength="120" placeholder="Ej. paciente@clinica.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-hospital-deep focus:ring-1 focus:ring-hospital-deep outline-hidden bg-slate-50 focus:bg-white">
+                </div>
+
+                <!-- Fecha de Nacimiento (Opcional) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="pacienteFechaNacimiento">
+                        Fecha de Nacimiento
+                    </label>
+                    <input type="date" id="pacienteFechaNacimiento" name="fecha_nacimiento" max="{{ date('Y-m-d') }}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-hospital-deep focus:ring-1 focus:ring-hospital-deep outline-hidden bg-slate-50 focus:bg-white">
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+                    <button type="button" class="btnCerrarModalPaciente px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnGuardarPaciente" class="inline-flex items-center space-x-2 px-5 py-2 bg-hospital-deep hover:bg-hospital-hover text-white rounded-lg font-heading font-bold text-sm shadow-sm transition cursor-pointer">
+                        <i class="fa-solid fa-save"></i>
+                        <span>Guardar Paciente</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- ================================================================= -->
     <!-- LOGICA JAVASCRIPT: FULLCALENDAR + CONSUMO DE API REST             -->
@@ -662,7 +748,7 @@
                     .catch(err => console.error('Error cargando doctores:', err));
             }
 
-            function cargarPacientes() {
+            function cargarPacientes(pacienteSeleccionarId = null) {
                 fetch('/api/pacientes')
                     .then(res => res.json())
                     .then(response => {
@@ -672,11 +758,18 @@
                             const opt = document.createElement('option');
                             opt.value = p.id;
                             opt.textContent = `${p.nombre} (Tel: ${p.telefono || 'S/N'})`;
+                            if (pacienteSeleccionarId && p.id === pacienteSeleccionarId) {
+                                opt.selected = true;
+                            }
                             crearPacienteIdEl.appendChild(opt);
                         });
+                        if (pacienteSeleccionarId) {
+                            crearPacienteIdEl.value = pacienteSeleccionarId;
+                        }
                     })
                     .catch(err => console.error('Error cargando pacientes:', err));
             }
+
 
             // -------------------------------------------------------------
             // 4. CREACIÓN DE CITA MÉDICA (RQF-01, RQF-08)
@@ -950,6 +1043,116 @@
             filtroDoctorEl.addEventListener('change', () => calendar.refetchEvents());
             filtroEstadoEl.addEventListener('change', () => calendar.refetchEvents());
             btnRefrescarEl.addEventListener('click', () => calendar.refetchEvents());
+
+            // -------------------------------------------------------------
+            // 7. REGISTRO DE NUEVOS PACIENTES (RQF-09, RQNF-03)
+            // -------------------------------------------------------------
+            const modalNuevoPacienteEl = document.getElementById('modalNuevoPaciente');
+            const formCrearPacienteEl = document.getElementById('formCrearPaciente');
+            const bannerErrorPacienteEl = document.getElementById('bannerErrorPaciente');
+            const btnAbrirModalPacienteEl = document.getElementById('btnAbrirModalPaciente');
+            const btnCrearPacienteRapidoEl = document.getElementById('btnCrearPacienteRapido');
+            const pacienteNombreEl = document.getElementById('pacienteNombre');
+            const pacienteTelefonoEl = document.getElementById('pacienteTelefono');
+            const pacienteEmailEl = document.getElementById('pacienteEmail');
+            const pacienteFechaNacimientoEl = document.getElementById('pacienteFechaNacimiento');
+            const btnGuardarPacienteEl = document.getElementById('btnGuardarPaciente');
+
+            function abrirModalNuevoPaciente() {
+                formCrearPacienteEl.reset();
+                bannerErrorPacienteEl.classList.add('hidden');
+                bannerErrorPacienteEl.innerHTML = '';
+                modalNuevoPacienteEl.classList.remove('hidden');
+                setTimeout(() => pacienteNombreEl.focus(), 100);
+            }
+
+            if (btnAbrirModalPacienteEl) {
+                btnAbrirModalPacienteEl.addEventListener('click', abrirModalNuevoPaciente);
+            }
+
+            if (btnCrearPacienteRapidoEl) {
+                btnCrearPacienteRapidoEl.addEventListener('click', abrirModalNuevoPaciente);
+            }
+
+            document.querySelectorAll('.btnCerrarModalPaciente').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modalNuevoPacienteEl.classList.add('hidden');
+                });
+            });
+
+            formCrearPacienteEl.addEventListener('submit', (e) => {
+                e.preventDefault();
+                bannerErrorPacienteEl.classList.add('hidden');
+                bannerErrorPacienteEl.innerHTML = '';
+
+                const payload = {
+                    nombre: pacienteNombreEl.value.trim(),
+                    telefono: pacienteTelefonoEl.value.trim() || null,
+                    email: pacienteEmailEl.value.trim() || null,
+                    fecha_nacimiento: pacienteFechaNacimientoEl.value || null
+                };
+
+                btnGuardarPacienteEl.disabled = true;
+                btnGuardarPacienteEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+                fetch('/api/pacientes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(async res => {
+                    const data = await res.json();
+
+                    if (res.status === 400) {
+                        bannerErrorPacienteEl.classList.remove('hidden');
+                        let errHtml = '<strong><i class="fa-solid fa-circle-exclamation"></i> Error en los datos ingresados:</strong><ul class="list-disc list-inside mt-1">';
+                        if (data.errores) {
+                            Object.values(data.errores).flat().forEach(err => {
+                                errHtml += `<li>${err}</li>`;
+                            });
+                        } else {
+                            errHtml += `<li>${data.mensaje || 'Datos inválidos'}</li>`;
+                        }
+                        errHtml += '</ul>';
+                        bannerErrorPacienteEl.innerHTML = errHtml;
+                        return;
+                    }
+
+                    if (!res.ok) {
+                        throw new Error(data.mensaje || 'Error en el servidor');
+                    }
+
+                    // Éxito: Status 201 Created
+                    modalNuevoPacienteEl.classList.add('hidden');
+                    const nuevoPaciente = data.data;
+
+                    // Actualizar el dropdown de pacientes y pre-seleccionar el nuevo paciente
+                    cargarPacientes(nuevoPaciente.id);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Paciente Registrado!',
+                        text: `Se ha registrado a ${nuevoPaciente.nombre} exitosamente.`,
+                        confirmButtonColor: '#2B6B8A',
+                        timer: 2500
+                    });
+
+                    formCrearPacienteEl.reset();
+                })
+                .catch(err => {
+                    console.error('Error al registrar paciente:', err);
+                    bannerErrorPacienteEl.classList.remove('hidden');
+                    bannerErrorPacienteEl.innerHTML = `<strong>Error inesperado:</strong> ${err.message}`;
+                })
+                .finally(() => {
+                    btnGuardarPacienteEl.disabled = false;
+                    btnGuardarPacienteEl.innerHTML = '<i class="fa-solid fa-save"></i> <span>Guardar Paciente</span>';
+                });
+            });
+
 
         });
     </script>

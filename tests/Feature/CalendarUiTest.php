@@ -28,9 +28,12 @@ class CalendarUiTest extends TestCase
         $response->assertSee('Open Sans');
         $response->assertSee('modalCrearCita');
         $response->assertSee('modalDetalleCita');
+        $response->assertSee('modalNuevoPaciente');
+        $response->assertSee('btnAbrirModalPaciente');
         $response->assertSee('filtroDoctor');
         $response->assertSee('filtroEstado');
     }
+
 
     /**
      * [TEST 2] Verificación de la paleta de colores requerida en CitaResource (RQF-10)
